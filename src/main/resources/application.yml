@@ -31,5 +31,5 @@ app:
   ai:
     enabled: ${AI_ENABLED:false}
     api-key: ${AI_API_KEY:}
-    base-url: ${AI_BASE_URL:https://api.openai.com/v1}
-    model: ${AI_MODEL:gpt-4o-mini}
+    base-url: ${AI_BASE_URL:https://generativelanguage.googleapis.com/v1beta/openai}
+    model: ${AI_MODEL:gemini-2.5-flash}

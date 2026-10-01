@@ -62,7 +62,7 @@ Default connection values:
 ## Run
 
 ```bash
-mvn spring-boot:run
+./mvnw spring-boot:run
 ```
 
 On an empty database the app seeds a class, a published sample quiz, and these accounts (local demo only):
@@ -78,24 +78,24 @@ On an empty database the app seeds a class, a published sample quiz, and these a
 
 Set these environment variables when the defaults are not what you want:
 
-| Variable       | Purpose                                                 |
-| -------------- | ------------------------------------------------------- |
-| `DB_URL`       | JDBC URL                                                |
-| `DB_USERNAME`  | Database user                                           |
-| `DB_PASSWORD`  | Database password                                       |
-| `JWT_SECRET`   | HMAC key, at least 32 bytes                             |
-| `CORS_ORIGINS` | Allowed browser origin. Default `http://localhost:3000` |
-| `AI_ENABLED`   | `true` to turn on AI features                           |
-| `AI_API_KEY`   | Key for the chat API                                    |
-| `AI_BASE_URL`  | Default `https://api.openai.com/v1`                     |
-| `AI_MODEL`     | Default `gpt-4o-mini`                                   |
+| Variable       | Purpose                                                           |
+| -------------- | ----------------------------------------------------------------- |
+| `DB_URL`       | JDBC URL                                                          |
+| `DB_USERNAME`  | Database user                                                     |
+| `DB_PASSWORD`  | Database password                                                 |
+| `JWT_SECRET`   | HMAC key, at least 32 bytes                                       |
+| `CORS_ORIGINS` | Allowed browser origin. Default `http://localhost:3000`           |
+| `AI_ENABLED`   | `true` to turn on AI features                                     |
+| `AI_API_KEY`   | Gemini API key from Google AI Studio                              |
+| `AI_BASE_URL`  | Default `https://generativelanguage.googleapis.com/v1beta/openai` |
+| `AI_MODEL`     | Default `gemini-2.5-flash`                                        |
 
 AI question generation, short-answer grading, and study summaries return a clear error until `AI_ENABLED` and `AI_API_KEY` are set. Manual grading still works.
 
 ## Tests
 
 ```bash
-mvn test
+./mvnw test
 ```
 
 `AuthRulesTest` checks registration, login, and role rejection. `AttemptEvaluationTest` checks objective scoring and pending short answers.
