@@ -2,12 +2,7 @@ package com.testpoint.user;
 
 import com.testpoint.security.SecurityUtils;
 import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import static org.springframework.http.HttpStatus.CREATED;
 
@@ -34,5 +29,11 @@ public class AuthController {
 	@GetMapping("/me")
 	public UserDtos.UserResponse me() {
 		return userService.me(SecurityUtils.currentUser().getId());
+	}
+
+	@GetMapping("/hello")
+	public String hello(@RequestParam(name = "name", defaultValue = "World") String name) {
+		System.out.println(name);
+		return "Hello, " + name;
 	}
 }

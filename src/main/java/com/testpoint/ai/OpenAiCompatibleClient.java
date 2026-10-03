@@ -115,7 +115,7 @@ public class OpenAiCompatibleClient implements AiClient {
 					.build();
 			HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 			if (response.statusCode() >= 300) {
-				throw new ApiException(HttpStatus.BAD_GATEWAY, "The AI service returned an error");
+				throw new ApiException(HttpStatus.BAD_GATEWAY, "The AI service returned an error: " + upstreamMessage(response.body()));
 			}
 			JsonNode content = objectMapper.readTree(response.body()).path("choices").path(0).path("message").path("content");
 			return objectMapper.readTree(extractJson(content.asText()));
@@ -124,6 +124,29 @@ public class OpenAiCompatibleClient implements AiClient {
 		} catch (Exception exception) {
 			throw new ApiException(HttpStatus.BAD_GATEWAY, "Could not read the AI response");
 		}
+	}
+
+	private String upstreamMessage(String body) {
+		try {
+			JsonNode root = objectMapper.readTree(body);
+			// The OpenAI-compatible Gemini endpoint wraps errors in a one-element array.
+			JsonNode node = root.isArray() && !root.isEmpty() ? root.get(0) : root;
+			JsonNode error = node.path("error");
+			String message = error.path("message").asText("");
+			if (message.isBlank() && error.isTextual()) {
+				message = error.asText("");
+			}
+			if (message.isBlank()) {
+				message = node.path("message").asText("");
+			}
+			message = message.replaceAll("\\s+", " ").trim();
+			if (!message.isBlank()) {
+				return message.length() > 240 ? message.substring(0, 240) : message;
+			}
+		} catch (Exception ignored) {
+			// Fall through to a generic status when the body is not JSON.
+		}
+		return "the AI service rejected the request";
 	}
 
 	private String extractJson(String content) {

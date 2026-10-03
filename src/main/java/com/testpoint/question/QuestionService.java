@@ -2,11 +2,15 @@ package com.testpoint.question;
 
 import com.testpoint.ai.AiClient;
 import com.testpoint.common.ApiException;
+import com.testpoint.common.PageResponse;
 import com.testpoint.quiz.QuizQuestionRepository;
 import com.testpoint.user.UserRepository;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,10 +34,22 @@ public class QuestionService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<QuestionDtos.QuestionResponse> list(Long instructorId) {
-		return questionRepository.findByInstructorIdOrderByCreatedAtDesc(instructorId).stream()
-				.map(QuestionDtos.QuestionResponse::from)
-				.toList();
+	public PageResponse<QuestionDtos.QuestionResponse> list(Long instructorId, int page, int size) {
+		if (page < 0) {
+			throw new ApiException(HttpStatus.BAD_REQUEST, "page", "Page must be 0 or greater");
+		}
+		if (size < 1 || size > 100) {
+			throw new ApiException(HttpStatus.BAD_REQUEST, "size", "Size must be between 1 and 100");
+		}
+		Page<Question> result = questionRepository.findByInstructorId(
+				instructorId,
+				PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt")));
+		return new PageResponse<>(
+				result.getContent().stream().map(QuestionDtos.QuestionResponse::from).toList(),
+				result.getNumber(),
+				result.getSize(),
+				result.getTotalElements(),
+				result.getTotalPages());
 	}
 
 	@Transactional

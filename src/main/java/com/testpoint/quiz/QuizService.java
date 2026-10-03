@@ -6,11 +6,15 @@ import com.testpoint.classroom.ClassGroupRepository;
 import com.testpoint.classroom.ClassService;
 import com.testpoint.classroom.EnrollmentRepository;
 import com.testpoint.common.ApiException;
+import com.testpoint.common.PageResponse;
 import com.testpoint.question.Question;
 import com.testpoint.question.QuestionService;
 import com.testpoint.user.Role;
 import com.testpoint.user.User;
 import com.testpoint.user.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,8 +66,27 @@ public class QuizService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<QuizDtos.QuizResponse> list(Long instructorId) {
-		return quizRepository.findByInstructorIdOrderByCreatedAtDesc(instructorId).stream().map(this::toResponse).toList();
+	public PageResponse<QuizDtos.QuizResponse> list(Long instructorId, int page, int size) {
+		if (page < 0) {
+			throw new ApiException(HttpStatus.BAD_REQUEST, "page", "Page must be 0 or greater");
+		}
+		if (size < 1 || size > 100) {
+			throw new ApiException(HttpStatus.BAD_REQUEST, "size", "Size must be between 1 and 100");
+		}
+		Page<Quiz> result = quizRepository.findByInstructorId(
+				instructorId,
+				PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt")));
+		return new PageResponse<>(
+				result.getContent().stream().map(this::toResponse).toList(),
+				result.getNumber(),
+				result.getSize(),
+				result.getTotalElements(),
+				result.getTotalPages());
+	}
+
+	@Transactional(readOnly = true)
+	public List<String> titles(Long instructorId) {
+		return quizRepository.findByInstructorIdOrderByCreatedAtDesc(instructorId).stream().map(Quiz::getTitle).toList();
 	}
 
 	@Transactional(readOnly = true)
@@ -192,7 +215,7 @@ public class QuizService {
 	public QuizDtos.InstructorSummary summary(Long instructorId) {
 		return new QuizDtos.InstructorSummary(
 				classGroupRepository.findByInstructorIdOrderByCreatedAtDesc(instructorId).size(),
-				quizRepository.findByInstructorIdOrderByCreatedAtDesc(instructorId).size(),
+				quizRepository.countByInstructorId(instructorId),
 				answerRepository.findPendingForInstructor(instructorId).size());
 	}
 

@@ -32,4 +32,4 @@ app:
     enabled: ${AI_ENABLED:false}
     api-key: ${AI_API_KEY:}
     base-url: ${AI_BASE_URL:https://generativelanguage.googleapis.com/v1beta/openai}
-    model: ${AI_MODEL:gemini-2.5-flash}
+    model: ${AI_MODEL:gemini-3.8-flash}

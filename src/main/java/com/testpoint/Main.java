@@ -8,11 +8,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 @SpringBootApplication
-public class BackendApplication {
+public class Main {
 
 	public static void main(String[] args) throws IOException {
 		loadEnv();
-		SpringApplication.run(BackendApplication.class, args);
+		SpringApplication.run(Main.class, args);
 	}
 
 	static void loadEnv() throws IOException {

@@ -65,7 +65,7 @@ Default connection values:
 ./mvnw spring-boot:run
 ```
 
-On an empty database the app seeds a class, a published sample quiz, and these accounts (local demo only):
+On an empty database the app seeds a class and these accounts (local demo only). It also publishes four Advanced Java quizzes (Spring Boot, collections, threading, generics), each with multiple-choice, true/false, and short-answer questions, and assigns them to that class. Restarting the app adds any of those quizzes that are not already there.
 
 | Role       | Email                      | Password       |
 | ---------- | -------------------------- | -------------- |
@@ -88,7 +88,7 @@ Set these environment variables when the defaults are not what you want:
 | `AI_ENABLED`   | `true` to turn on AI features                                     |
 | `AI_API_KEY`   | Gemini API key from Google AI Studio                              |
 | `AI_BASE_URL`  | Default `https://generativelanguage.googleapis.com/v1beta/openai` |
-| `AI_MODEL`     | Default `gemini-2.5-flash`                                        |
+| `AI_MODEL`     | Default `gemini-3.8-flash`                                        |
 
 AI question generation, short-answer grading, and study summaries return a clear error until `AI_ENABLED` and `AI_API_KEY` are set. Manual grading still works.
 
